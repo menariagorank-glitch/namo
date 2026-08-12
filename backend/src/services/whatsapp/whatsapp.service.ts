@@ -22,12 +22,20 @@ export class WhatsAppService {
       authStrategy: new LocalAuth({ dataPath: './.wwebjs_auth' }),
       puppeteer: {
         executablePath: puppeteer.executablePath(),
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-        headless: true, // Make sure it runs headlessly
+        args: [
+          '--no-sandbox', 
+          '--disable-setuid-sandbox', 
+          '--disable-dev-shm-usage',
+          '--disable-accelerated-2d-canvas',
+          '--no-first-run',
+          '--no-zygote',
+          '--single-process',
+          '--disable-gpu'
+        ],
+        headless: true,
       },
       webVersionCache: {
-        type: 'remote',
-        remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html',
+        type: 'none'
       }
     });
 
@@ -41,6 +49,15 @@ export class WhatsAppService {
     this.client.on('ready', () => {
       this.isReady = true;
       logger.info('✅ WhatsApp Client is READY and connected!');
+    });
+
+    this.client.on('auth_failure', msg => {
+      logger.error(`❌ WhatsApp Authentication Failed: ${msg}`);
+    });
+
+    this.client.on('disconnected', (reason) => {
+      this.isReady = false;
+      logger.error(`❌ WhatsApp Client was disconnected. Reason: ${reason}`);
     });
 
     this.client.on('authenticated', () => {
