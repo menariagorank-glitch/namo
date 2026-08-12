@@ -77,7 +77,7 @@
   const hotelForm = document.querySelector('.js-hotel-form');
 
   if (hotelForm) {
-    hotelForm.addEventListener('submit', (e) => {
+    hotelForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       let valid = true;
@@ -93,18 +93,64 @@
       if (!valid) return;
 
       const submitBtn = hotelForm.querySelector('[type="submit"]');
+      const originalText = submitBtn ? submitBtn.textContent : 'Send Enquiry';
+
       if (submitBtn) {
-        submitBtn.textContent = 'Enquiry Sent!';
-        submitBtn.style.background = '#27ae60';
-        submitBtn.style.borderColor = '#27ae60';
-        setTimeout(() => {
-          submitBtn.textContent = 'Send Enquiry';
-          submitBtn.style.background = '';
-          submitBtn.style.borderColor = '';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+      }
+
+      const formData = new FormData(hotelForm);
+      const payload = {
+        name: (formData.get('name') || '').toString().trim(),
+        phone: (formData.get('phone') || '').toString().trim(),
+        email: (formData.get('email') || '').toString().trim(),
+        hotel: (formData.get('property') || '').toString().trim(),
+        message: (formData.get('message') || '').toString().trim(),
+        source: 'Hotel Website',
+      };
+
+      try {
+        const res = await fetch('/api/enquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok && data.success !== false) {
+          if (submitBtn) {
+            submitBtn.textContent = 'Enquiry Sent!';
+            submitBtn.style.background = '#27ae60';
+            submitBtn.style.borderColor = '#27ae60';
+          }
           hotelForm.reset();
-        }, 3000);
+
+          setTimeout(() => {
+            if (submitBtn) {
+              submitBtn.textContent = originalText;
+              submitBtn.style.background = '';
+              submitBtn.style.borderColor = '';
+              submitBtn.disabled = false;
+            }
+          }, 4000);
+        } else {
+          alert(data.message || 'Unable to submit enquiry. Please try again.');
+          if (submitBtn) {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+          }
+        }
+      } catch {
+        alert('Unable to connect to server. Please check your connection and try again.');
+        if (submitBtn) {
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+        }
       }
     });
   }
 
 })();
+

@@ -1,0 +1,683 @@
+/* ============================================================
+   NAMO HOTEL & TRAVEL — Hotel / Inner Pages Styles
+   ============================================================ */
+
+/* ============================================================
+   PAGE HERO BANNER (Hotel Pages)
+   ============================================================ */
+
+.page-hero {
+  position: relative;
+  height: 70vh;
+  min-height: 480px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+.page-hero__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.page-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(43, 35, 32, 0.85) 0%,
+    rgba(43, 35, 32, 0.40) 50%,
+    rgba(43, 35, 32, 0.20) 100%
+  );
+}
+
+.page-hero__content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding-bottom: var(--space-12);
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.breadcrumb__item {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.05em;
+}
+
+.breadcrumb__sep {
+  color: var(--color-gold);
+  font-size: 10px;
+}
+
+.breadcrumb__item--current {
+  color: var(--color-gold);
+}
+
+.page-hero__property-type {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  margin-bottom: var(--space-3);
+}
+
+.page-hero__title {
+  font-family: var(--font-heading);
+  font-size: clamp(var(--fs-3xl), 5vw, var(--fs-5xl));
+  color: var(--color-white);
+  margin-bottom: var(--space-3);
+  line-height: 1.15;
+}
+
+.page-hero__location {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(18, 18, 18, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(230, 85, 18, 0.6);
+  padding: 0.55rem 1.25rem;
+  border-radius: var(--radius-full);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  margin-top: 0.75rem;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.page-hero__location:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+}
+
+.page-hero__location-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  box-shadow: 0 2px 8px rgba(230, 85, 18, 0.4);
+  flex-shrink: 0;
+}
+
+.page-hero__location-text {
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   PROPERTY ADDRESS SPOTLIGHT BANNER (NATURAL SAFFRON THEME)
+   ============================================================ */
+.property-address-spotlight {
+  background: linear-gradient(135deg, #FFF9F4 0%, #F5EBE1 100%);
+  border: 1.5px solid var(--color-border);
+  border-left: 5px solid var(--color-primary);
+  border-radius: var(--radius-xl);
+  padding: 1.4rem 2rem;
+  margin-bottom: var(--space-10);
+  box-shadow: 0 8px 30px rgba(230, 85, 18, 0.07), 0 2px 6px rgba(0, 0, 0, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.property-address-spotlight:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(230, 85, 18, 0.12);
+  border-color: rgba(230, 85, 18, 0.3);
+}
+
+.spotlight-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), #d4470a);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 15px rgba(230, 85, 18, 0.3);
+  flex-shrink: 0;
+}
+
+.spotlight-content {
+  flex: 1;
+  min-width: 260px;
+}
+
+.spotlight-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 0.25rem;
+}
+
+.spotlight-address {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 0.2rem;
+  line-height: 1.35;
+}
+
+.spotlight-landmark {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.spotlight-landmark i {
+  color: var(--color-gold);
+}
+
+.contact__detail--featured-address {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(230, 85, 18, 0.06), rgba(201, 162, 39, 0.08));
+  border: 1.5px solid rgba(230, 85, 18, 0.25) !important;
+  border-left: 4px solid var(--color-primary) !important;
+  padding: 1.2rem 1.5rem !important;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 20px rgba(230, 85, 18, 0.08);
+}
+
+.contact__detail--featured-address .contact__detail-icon {
+  background: linear-gradient(135deg, var(--color-primary), #d4470a);
+  color: #ffffff;
+}
+
+.contact__detail--featured-address .contact__detail-text strong {
+  font-size: 0.85rem;
+  color: var(--color-primary);
+  letter-spacing: 0.08em;
+}
+
+.contact__detail--featured-address .contact__detail-text span {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+/* ============================================================
+   HOTEL ABOUT SECTION
+   ============================================================ */
+
+.hotel-about {
+  background: var(--color-bg);
+}
+
+.hotel-about__grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: var(--space-16);
+  align-items: center;
+}
+
+.hotel-about__img {
+  width: 100%;
+  height: 520px;
+  object-fit: cover;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+}
+
+.hotel-about__content h2 {
+  font-size: var(--fs-3xl);
+  color: var(--color-primary);
+  margin-bottom: var(--space-4);
+}
+
+.hotel-about__content p {
+  margin-bottom: var(--space-4);
+}
+
+.hotel-about__highlights {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.hotel-about__highlight {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.hotel-about__highlight i {
+  color: var(--color-gold);
+  font-size: var(--fs-base);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .hotel-about__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hotel-about__img {
+    height: 300px;
+  }
+}
+
+/* ============================================================
+   ROOM CARDS (Accommodation)
+   ============================================================ */
+
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+}
+
+.room-card {
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+  transition: all var(--transition-slow);
+}
+
+.room-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--color-gold);
+}
+
+.room-card__img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.room-card:hover .room-card__img {
+  transform: scale(1.04);
+}
+
+.room-card__img-wrap {
+  overflow: hidden;
+}
+
+.room-card__body {
+  padding: var(--space-6);
+}
+
+.room-card__name {
+  font-family: var(--font-heading);
+  font-size: var(--fs-xl);
+  color: var(--color-primary);
+  margin-bottom: var(--space-2);
+}
+
+.room-card__desc {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  margin-bottom: var(--space-5);
+}
+
+.room-card__amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.room-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px 10px;
+  background: var(--color-secondary);
+  border-radius: var(--radius-full);
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  font-weight: var(--fw-medium);
+}
+
+.room-tag i {
+  font-size: 10px;
+  color: var(--color-primary);
+}
+
+@media (max-width: 1024px) {
+  .rooms-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .rooms-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   AMENITIES GRID (Hotel Pages)
+   ============================================================ */
+
+.amenities {
+  background: var(--color-secondary);
+}
+
+.amenities-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--space-4);
+}
+
+.amenity-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-4);
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  text-align: center;
+  transition: all var(--transition-slow);
+  box-shadow: var(--shadow-sm);
+}
+
+.amenity-item:hover {
+  border-color: var(--color-gold);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.amenity-item i {
+  font-size: var(--fs-2xl);
+  color: var(--color-gold);
+  transition: transform var(--transition-slow);
+}
+
+.amenity-item:hover i {
+  transform: scale(1.15);
+}
+
+.amenity-item span {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  color: var(--color-text);
+  line-height: 1.3;
+}
+
+@media (max-width: 1024px) {
+  .amenities-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .amenities-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ============================================================
+   HOTEL GALLERY GRID
+   ============================================================ */
+
+.hotel-gallery {
+  background: var(--color-bg);
+}
+
+.hotel-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 220px;
+  gap: var(--space-3);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.hotel-gallery-grid .gallery-item {
+  border-radius: 0;
+  margin: 0;
+  height: 100%;
+}
+
+.hotel-gallery-grid .gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hotel-gallery-grid .gallery-item:first-child {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+@media (max-width: 768px) {
+  .hotel-gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 160px;
+  }
+
+  .hotel-gallery-grid .gallery-item:first-child {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+}
+
+/* ============================================================
+   HOTEL EXPERIENCES (Activities)
+   ============================================================ */
+
+.hotel-experiences {
+  background: var(--color-white);
+}
+
+.activities-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-5);
+}
+
+.activity-card {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  height: 280px;
+  cursor: pointer;
+}
+
+.activity-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.activity-card:hover .activity-card__img {
+  transform: scale(1.07);
+}
+
+.activity-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(43, 35, 32, 0.85) 0%,
+    transparent 60%
+  );
+}
+
+.activity-card__content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-5);
+}
+
+.activity-card__name {
+  font-family: var(--font-heading);
+  font-size: var(--fs-lg);
+  color: var(--color-white);
+}
+
+.activity-card__icon {
+  color: var(--color-gold);
+  font-size: var(--fs-xl);
+  margin-bottom: var(--space-2);
+}
+
+@media (max-width: 900px) {
+  .activities-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .activities-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   NEARBY ATTRACTIONS
+   ============================================================ */
+
+.nearby {
+  background: var(--color-secondary);
+}
+
+.nearby-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+}
+
+.nearby-card {
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+  transition: all var(--transition-slow);
+}
+
+.nearby-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-gold);
+}
+
+.nearby-card__img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.nearby-card__img-wrap {
+  overflow: hidden;
+}
+
+.nearby-card:hover .nearby-card__img {
+  transform: scale(1.05);
+}
+
+.nearby-card__body {
+  padding: var(--space-5);
+}
+
+.nearby-card__distance {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--color-gold);
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-2);
+}
+
+.nearby-card__name {
+  font-family: var(--font-heading);
+  font-size: var(--fs-lg);
+  color: var(--color-primary);
+  margin-bottom: var(--space-2);
+}
+
+.nearby-card__desc {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .nearby-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .nearby-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   HOTEL CONTACT SECTION
+   ============================================================ */
+
+.hotel-contact {
+  background: var(--color-bg);
+}
+
+/* ============================================================
+   INNER PAGE UTILITIES
+   ============================================================ */
+
+.hotel-section {
+  padding-block: var(--space-20);
+}
+
+.hotel-section--sm {
+  padding-block: var(--space-12);
+}
+
+.hotel-section--bg-white {
+  background: var(--color-white);
+}
+
+.hotel-section--bg-cream {
+  background: var(--color-bg);
+}
+
+.hotel-section--bg-secondary {
+  background: var(--color-secondary);
+}
+
+.hotel-section--bg-primary {
+  background: var(--color-primary);
+}
