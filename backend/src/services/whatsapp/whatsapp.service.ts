@@ -14,6 +14,15 @@ export interface WhatsAppSendResult {
 export class WhatsAppService {
   private static client: Client;
   private static isReady: boolean = false;
+  private static latestQrCode: string | null = null;
+
+  public static getLatestQrCode(): string | null {
+    return this.latestQrCode;
+  }
+
+  public static getIsReady(): boolean {
+    return this.isReady;
+  }
 
   public static initialize() {
     logger.info('⏳ Initializing WhatsApp Web Client... (Note: First run may take 5+ minutes to download Chromium in the background)');
@@ -40,6 +49,7 @@ export class WhatsAppService {
     });
 
     this.client.on('qr', (qr) => {
+      this.latestQrCode = qr;
       logger.info('======================================================');
       logger.info('📲 WhatsApp Authentication Required! Scan this QR code:');
       logger.info('======================================================');
@@ -48,6 +58,7 @@ export class WhatsAppService {
 
     this.client.on('ready', () => {
       this.isReady = true;
+      this.latestQrCode = null;
       logger.info('✅ WhatsApp Client is READY and connected!');
     });
 
@@ -61,6 +72,7 @@ export class WhatsAppService {
     });
 
     this.client.on('authenticated', () => {
+      this.latestQrCode = null;
       logger.info('✅ WhatsApp Client authenticated successfully.');
     });
 

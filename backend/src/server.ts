@@ -71,6 +71,56 @@ const startServer = async () => {
 
   WhatsAppService.initialize();
 
+  // Real-time QR Code Web Viewer (Fixes Render log buffering issues)
+  app.get('/api/qr', (req, res) => {
+    const qrData = WhatsAppService.getLatestQrCode();
+    const isReady = WhatsAppService.getIsReady();
+    
+    if (isReady) {
+      res.send(`<h2>✅ WhatsApp is successfully connected! You can close this window.</h2>`);
+      return;
+    }
+    
+    if (!qrData) {
+      res.send(`<h2>⏳ Generating QR Code... Please refresh in a few seconds.</h2>`);
+      return;
+    }
+
+    res.send(`
+      <html>
+      <head>
+        <title>WhatsApp QR Scan</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+        <style>
+          body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #f0f2f5; }
+          .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; }
+          #qrcode { margin: 20px auto; display: flex; justify-content: center; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h2>Scan to Link WhatsApp</h2>
+          <p>Scan this QR code with your WhatsApp mobile app.</p>
+          <div id="qrcode"></div>
+          <p style="color: gray; font-size: 14px;">(This code refreshes automatically. If it fails, refresh the page)</p>
+        </div>
+        <script>
+          new QRCode(document.getElementById("qrcode"), {
+            text: "${qrData}",
+            width: 256,
+            height: 256
+          });
+          
+          // Auto-refresh the page every 15 seconds to fetch new QR code if it expires
+          setTimeout(() => {
+            window.location.reload();
+          }, 15000);
+        </script>
+      </body>
+      </html>
+    `);
+  });
+
   const destNumber = getWhatsAppDestinationNumber();
   if (destNumber) {
     logger.info(`📱 WhatsApp Destination Number configured: ${destNumber}`);
