@@ -1,5 +1,6 @@
 import { Client, LocalAuth } from 'whatsapp-web.js';
 import qrcode from 'qrcode-terminal';
+import puppeteer from 'puppeteer';
 import { getWhatsAppDestinationNumber } from '../../config/env.js';
 import { logger } from '../../utils/logger.js';
 import { WhatsAppStatus } from '../../types/enquiry.types.js';
@@ -20,6 +21,7 @@ export class WhatsAppService {
     this.client = new Client({
       authStrategy: new LocalAuth({ dataPath: './.wwebjs_auth' }),
       puppeteer: {
+        executablePath: puppeteer.executablePath(),
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
         headless: true, // Make sure it runs headlessly
       },
