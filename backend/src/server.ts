@@ -57,20 +57,6 @@ export const createApp = (): Application => {
   // Versioned API Routes
   app.use('/api/v1', apiRouter);
 
-  // 404 Route Handler
-  app.use(notFoundHandler);
-
-  // Centralized Error Handling Middleware
-  app.use(errorHandler);
-
-  return app;
-};
-
-const startServer = async () => {
-  const app = createApp();
-
-  WhatsAppService.initialize();
-
   // Real-time QR Code Web Viewer (Fixes Render log buffering issues)
   app.get('/api/qr', (req, res) => {
     const qrData = WhatsAppService.getLatestQrCode();
@@ -120,6 +106,20 @@ const startServer = async () => {
       </html>
     `);
   });
+
+  // 404 Route Handler
+  app.use(notFoundHandler);
+
+  // Centralized Error Handling Middleware
+  app.use(errorHandler);
+
+  return app;
+};
+
+const startServer = async () => {
+  const app = createApp();
+
+  WhatsAppService.initialize();
 
   const destNumber = getWhatsAppDestinationNumber();
   if (destNumber) {
