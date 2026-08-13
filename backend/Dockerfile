@@ -19,6 +19,9 @@ RUN npm run build
 # Give pptruser ownership so it can write .wwebjs_auth session files
 RUN chown -R pptruser:pptruser /app
 
+# Tell Puppeteer to skip downloading another Chrome since this image already has it
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
 # Switch to non-root user (Chrome requires this)
 USER pptruser
 

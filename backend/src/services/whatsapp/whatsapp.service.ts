@@ -29,7 +29,7 @@ export class WhatsAppService {
     this.client = new Client({
       authStrategy: new LocalAuth({ dataPath: '/app/.wwebjs_auth' }),
       puppeteer: {
-        // Do NOT override executablePath — let puppeteer find its bundled Chrome automatically
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
