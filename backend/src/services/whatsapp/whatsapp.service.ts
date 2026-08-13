@@ -71,7 +71,9 @@ export class WhatsAppService {
     this.client.on('qr', (qr) => {
       this.latestQrCode = qr;
       logger.info('======================================================');
-      logger.info('📲 WhatsApp Authentication Required! Scan this QR code:');
+      logger.info('📲 NEW WhatsApp QR Code Generated!');
+      logger.info('⚠️ SCAN IMMEDIATELY - EXPIRES IN 20 SECONDS!');
+      logger.info('⚠️ IF YOU SEE MULTIPLE QR CODES, ONLY SCAN THE VERY BOTTOM ONE!');
       logger.info('======================================================');
       qrcode.generate(qr, { small: true });
     });
