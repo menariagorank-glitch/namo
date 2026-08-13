@@ -7,18 +7,27 @@ import fs from 'fs';
 import puppeteer from 'puppeteer';
 
 function getBrowserExecutablePath(): string | undefined {
-  if (process.env.PUPPETEER_EXECUTABLE_PATH && fs.existsSync(process.env.PUPPETEER_EXECUTABLE_PATH)) {
-    return process.env.PUPPETEER_EXECUTABLE_PATH;
+  if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+    if (fs.existsSync(process.env.PUPPETEER_EXECUTABLE_PATH)) {
+      return process.env.PUPPETEER_EXECUTABLE_PATH;
+    } else {
+      logger.warn(`PUPPETEER_EXECUTABLE_PATH is set to ${process.env.PUPPETEER_EXECUTABLE_PATH} but that file DOES NOT EXIST.`);
+    }
   }
+
   try {
     const path = puppeteer.executablePath();
     if (path && fs.existsSync(path)) {
       return path;
+    } else {
+      logger.warn(`puppeteer.executablePath() returned ${path} but it DOES NOT EXIST.`);
     }
   } catch (error) {
     logger.warn('Failed to resolve puppeteer executable path automatically.');
   }
-  return process.env.PUPPETEER_EXECUTABLE_PATH || undefined;
+
+  logger.error('CRITICAL: No valid browser executable path found! Puppeteer will likely fail.');
+  return undefined;
 }
 
 export interface WhatsAppSendResult {
