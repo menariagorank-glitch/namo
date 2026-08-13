@@ -27,4 +27,7 @@ coverage/
 .vitest/
 
 # WhatsApp Web JS Session
+.cache/
 .wwebjs_auth/
+.wwebjs_auth_v2/
+.baileys_auth/

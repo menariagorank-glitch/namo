@@ -1,34 +1,9 @@
-import { Client, LocalAuth } from 'whatsapp-web.js';
+import makeWASocket, { useMultiFileAuthState, DisconnectReason } from '@whiskeysockets/baileys';
 import qrcode from 'qrcode-terminal';
 import { getWhatsAppDestinationNumber } from '../../config/env.js';
 import { logger } from '../../utils/logger.js';
 import { WhatsAppStatus } from '../../types/enquiry.types.js';
-import fs from 'fs';
-import puppeteer from 'puppeteer';
-
-function getBrowserExecutablePath(): string | undefined {
-  if (process.env.PUPPETEER_EXECUTABLE_PATH) {
-    if (fs.existsSync(process.env.PUPPETEER_EXECUTABLE_PATH)) {
-      return process.env.PUPPETEER_EXECUTABLE_PATH;
-    } else {
-      logger.warn(`PUPPETEER_EXECUTABLE_PATH is set to ${process.env.PUPPETEER_EXECUTABLE_PATH} but that file DOES NOT EXIST.`);
-    }
-  }
-
-  try {
-    const path = puppeteer.executablePath();
-    if (path && fs.existsSync(path)) {
-      return path;
-    } else {
-      logger.warn(`puppeteer.executablePath() returned ${path} but it DOES NOT EXIST.`);
-    }
-  } catch (error) {
-    logger.warn('Failed to resolve puppeteer executable path automatically.');
-  }
-
-  logger.error('CRITICAL: No valid browser executable path found! Puppeteer will likely fail.');
-  return undefined;
-}
+import pino from 'pino';
 
 export interface WhatsAppSendResult {
   status: WhatsAppStatus;
@@ -37,7 +12,7 @@ export interface WhatsAppSendResult {
 }
 
 export class WhatsAppService {
-  private static client: Client;
+  private static client: any;
   private static isReady: boolean = false;
   private static latestQrCode: string | null = null;
 
@@ -49,57 +24,73 @@ export class WhatsAppService {
     return this.isReady;
   }
 
-  public static initialize() {
-    logger.info('⏳ Initializing WhatsApp Web Client...');
+  public static async initialize() {
+    logger.info('⏳ Initializing WhatsApp Web Client (Baileys native protocol)...');
+    
+    // Store auth in /app/.baileys_auth_v2
+    const { state, saveCreds } = await useMultiFileAuthState('/app/.baileys_auth_v2');
 
-    this.client = new Client({
-      authStrategy: new LocalAuth({ dataPath: '/app/.wwebjs_auth_v2' }),
-      puppeteer: {
-        executablePath: getBrowserExecutablePath(),
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-accelerated-2d-canvas',
-          '--disable-gpu'
-        ],
-        headless: true,
+    const connectToWhatsApp = async () => {
+      // makeWASocket does not have a default export in some bundlers, handle both cases safely
+      const makeSocket = (makeWASocket as any).default || makeWASocket;
+      
+      this.client = makeSocket({
+        auth: state,
+        printQRInTerminal: false,
+        logger: pino({ level: 'silent' }) as any, // Suppress verbose internal logs
+        browser: ['NAMO Hotel Backend', 'Chrome', '120.0.0'],
+        markOnlineOnConnect: false,
+        syncFullHistory: false
+      });
+
+      if (process.env.WHATSAPP_SENDER_NUMBER && !this.client.authState.creds.me) {
+        setTimeout(async () => {
+          try {
+            const code = await this.client.requestPairingCode(process.env.WHATSAPP_SENDER_NUMBER.replace(/\D/g, ''));
+            logger.info('======================================================');
+            logger.info(`📲 WHATSAPP PAIRING CODE: ${code}`);
+            logger.info('⚠️ Tap "Link with phone number instead" on your phone and enter this code!');
+            logger.info('======================================================');
+          } catch (err) {
+            logger.error('❌ Failed to request pairing code:', err);
+          }
+        }, 3000);
       }
-    });
 
-    this.client.on('qr', (qr) => {
-      this.latestQrCode = qr;
-      logger.info('======================================================');
-      logger.info('📲 NEW WhatsApp QR Code Generated!');
-      logger.info('⚠️ SCAN IMMEDIATELY - EXPIRES IN 20 SECONDS!');
-      logger.info('⚠️ IF YOU SEE MULTIPLE QR CODES, ONLY SCAN THE VERY BOTTOM ONE!');
-      logger.info('======================================================');
-      qrcode.generate(qr, { small: true });
-    });
+      this.client.ev.on('connection.update', (update: any) => {
+        const { connection, lastDisconnect, qr } = update;
 
-    this.client.on('ready', () => {
-      this.isReady = true;
-      this.latestQrCode = null;
-      logger.info('✅ WhatsApp Client is READY and connected!');
-    });
+        if (qr && !process.env.WHATSAPP_SENDER_NUMBER) {
+          this.latestQrCode = qr;
+          logger.info('======================================================');
+          logger.info('📲 NEW WhatsApp QR Code Generated! (NATIVE CONNECTION)');
+          logger.info('⚠️ SCAN THIS QR CODE IN YOUR WHATSAPP APP');
+          logger.info('======================================================');
+          qrcode.generate(qr, { small: true });
+        }
 
-    this.client.on('authenticated', () => {
-      this.latestQrCode = null;
-      logger.info('✅ WhatsApp Client authenticated successfully.');
-    });
+        if (connection === 'close') {
+          const shouldReconnect = (lastDisconnect?.error as any)?.output?.statusCode !== DisconnectReason.loggedOut;
+          logger.error('❌ WhatsApp Connection closed due to:', lastDisconnect?.error);
+          this.isReady = false;
+          
+          if (shouldReconnect) {
+            logger.info('⏳ Reconnecting to WhatsApp...');
+            connectToWhatsApp();
+          } else {
+            logger.error('❌ WhatsApp Logged out. You must manually clear the /app/.baileys_auth folder to generate a new QR code.');
+          }
+        } else if (connection === 'open') {
+          this.isReady = true;
+          this.latestQrCode = null;
+          logger.info('✅ WhatsApp Client is READY and connected!');
+        }
+      });
 
-    this.client.on('auth_failure', (msg) => {
-      logger.error(`❌ WhatsApp Authentication Failed: ${msg}`);
-    });
+      this.client.ev.on('creds.update', saveCreds);
+    };
 
-    this.client.on('disconnected', (reason) => {
-      this.isReady = false;
-      logger.error(`❌ WhatsApp Client disconnected. Reason: ${reason}`);
-    });
-
-    this.client.initialize().catch((err) => {
-      logger.error('❌ Failed to initialize WhatsApp Client:', err);
-    });
+    connectToWhatsApp();
   }
 
   public static async sendNotification(messageText: string): Promise<WhatsAppSendResult> {
@@ -110,7 +101,7 @@ export class WhatsAppService {
       return { status: 'not_configured', errorDetails: 'WhatsApp destination number missing' };
     }
 
-    if (!this.isReady) {
+    if (!this.isReady || !this.client) {
       logger.error('❌ WhatsApp Client is not ready. Have you scanned the QR code?');
       return { status: 'failed', errorDetails: 'WhatsApp client is not ready.' };
     }
@@ -120,18 +111,17 @@ export class WhatsAppService {
     try {
       logger.info(`Sending WhatsApp enquiry to ${recipientPhone}...`);
 
-      let targetId = `${recipientPhone}@c.us`;
-      try {
-        const numberDetails = await this.client.getNumberId(recipientPhone);
-        if (numberDetails) {
-          targetId = numberDetails._serialized;
-        }
-      } catch {
-        logger.warn(`Could not lookup number ID, using fallback: ${targetId}`);
+      const targetId = `${recipientPhone}@s.whatsapp.net`;
+      
+      // Check if number exists on WA
+      const [result] = await this.client.onWhatsApp(targetId);
+      if (!result?.exists) {
+         logger.warn(`⚠️ Number ${recipientPhone} is not registered on WhatsApp.`);
+         return { status: 'failed', errorDetails: 'Number not on WhatsApp' };
       }
 
-      const response = await this.client.sendMessage(targetId, messageText);
-      const messageId = (response && response.id && response.id.id) ? response.id.id : `msg_${Date.now()}`;
+      const response = await this.client.sendMessage(result.jid, { text: messageText });
+      const messageId = response?.key?.id || `msg_${Date.now()}`;
 
       logger.info(`🟢 WhatsApp message sent. ID: ${messageId}`);
       return { status: 'sent', messageId };
