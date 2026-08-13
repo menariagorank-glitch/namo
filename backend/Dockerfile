@@ -1,28 +1,24 @@
-# Use official Puppeteer image which has all OS-level deps for Chrome pre-configured
 FROM ghcr.io/puppeteer/puppeteer:latest
 
 USER root
 
 WORKDIR /app
 
-# Copy package files and install dependencies
-# NOTE: Do NOT set PUPPETEER_SKIP_CHROMIUM_DOWNLOAD here.
-# We let puppeteer download its own bundled Chrome during npm install
-# so puppeteer.executablePath() can find it correctly at runtime.
+# CRITICAL: Set these BEFORE npm install so puppeteer skips downloading a
+# redundant Chrome and instead uses the one already in this Docker image.
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+
 COPY package*.json ./
 RUN npm install
 
-# Copy source code and build TypeScript
 COPY . .
 RUN npm run build
 
-# Give pptruser ownership so it can write .wwebjs_auth session files
+# Give pptruser write access so WhatsApp can save its session files
 RUN chown -R pptruser:pptruser /app
 
-# Tell Puppeteer to skip downloading another Chrome since this image already has it
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-
-# Switch to non-root user (Chrome requires this)
+# Chrome must run as non-root
 USER pptruser
 
 EXPOSE 5000
