@@ -1,28 +1,27 @@
+# Use official Puppeteer image which has all OS-level deps for Chrome pre-configured
 FROM ghcr.io/puppeteer/puppeteer:latest
 
 USER root
 
 WORKDIR /app
 
-# Install app dependencies
+# Copy package files and install dependencies
+# NOTE: Do NOT set PUPPETEER_SKIP_CHROMIUM_DOWNLOAD here.
+# We let puppeteer download its own bundled Chrome during npm install
+# so puppeteer.executablePath() can find it correctly at runtime.
 COPY package*.json ./
 RUN npm install
 
-# Bundle app source
+# Copy source code and build TypeScript
 COPY . .
-
-# Build TypeScript
 RUN npm run build
 
-# Give pptruser full ownership of the app directory so it can
-# write .wwebjs_auth session files without permission errors
+# Give pptruser ownership so it can write .wwebjs_auth session files
 RUN chown -R pptruser:pptruser /app
 
-# Switch to non-root user (required for Chrome to run)
+# Switch to non-root user (Chrome requires this)
 USER pptruser
 
 EXPOSE 5000
-
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 CMD ["npm", "start"]
