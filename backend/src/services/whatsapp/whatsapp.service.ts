@@ -53,7 +53,7 @@ export class WhatsAppService {
     logger.info('⏳ Initializing WhatsApp Web Client...');
 
     this.client = new Client({
-      authStrategy: new LocalAuth({ dataPath: '/app/.wwebjs_auth' }),
+      authStrategy: new LocalAuth({ dataPath: '/app/.wwebjs_auth_v2' }),
       puppeteer: {
         executablePath: getBrowserExecutablePath(),
         args: [
@@ -61,11 +61,7 @@ export class WhatsAppService {
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
           '--disable-accelerated-2d-canvas',
-          '--no-first-run',
-          '--disable-gpu',
-          '--disable-web-security',
-          '--disable-features=IsolateOrigins,site-per-process',
-          '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+          '--disable-gpu'
         ],
         headless: true,
       }
