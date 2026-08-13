@@ -5,9 +5,8 @@ USER root
 WORKDIR /app
 
 # CRITICAL: Set these BEFORE npm install so puppeteer skips downloading a
-# redundant Chrome and instead uses the one already in this Docker image.
+# redundant Chrome. We rely on the base image's built-in PUPPETEER_EXECUTABLE_PATH.
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
 COPY package*.json ./
 RUN npm install

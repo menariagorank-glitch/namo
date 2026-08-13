@@ -3,6 +3,23 @@ import qrcode from 'qrcode-terminal';
 import { getWhatsAppDestinationNumber } from '../../config/env.js';
 import { logger } from '../../utils/logger.js';
 import { WhatsAppStatus } from '../../types/enquiry.types.js';
+import fs from 'fs';
+import puppeteer from 'puppeteer';
+
+function getBrowserExecutablePath(): string | undefined {
+  if (process.env.PUPPETEER_EXECUTABLE_PATH && fs.existsSync(process.env.PUPPETEER_EXECUTABLE_PATH)) {
+    return process.env.PUPPETEER_EXECUTABLE_PATH;
+  }
+  try {
+    const path = puppeteer.executablePath();
+    if (path && fs.existsSync(path)) {
+      return path;
+    }
+  } catch (error) {
+    logger.warn('Failed to resolve puppeteer executable path automatically.');
+  }
+  return process.env.PUPPETEER_EXECUTABLE_PATH || undefined;
+}
 
 export interface WhatsAppSendResult {
   status: WhatsAppStatus;
@@ -29,7 +46,7 @@ export class WhatsAppService {
     this.client = new Client({
       authStrategy: new LocalAuth({ dataPath: '/app/.wwebjs_auth' }),
       puppeteer: {
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+        executablePath: getBrowserExecutablePath(),
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
