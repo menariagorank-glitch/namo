@@ -42,7 +42,7 @@ export class WhatsAppService {
         version,
         auth: state,
         printQRInTerminal: false,
-        logger: pino({ level: 'silent' }) as any, // Suppress verbose internal logs
+        logger: pino({ level: 'info' }) as any, // Turn on info logs to see where it gets stuck
         browser: Browsers.ubuntu('Desktop'),
         markOnlineOnConnect: false,
         syncFullHistory: false
