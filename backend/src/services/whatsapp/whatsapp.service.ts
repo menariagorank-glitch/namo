@@ -1,4 +1,4 @@
-import makeWASocket, { useMultiFileAuthState, DisconnectReason } from '@whiskeysockets/baileys';
+import makeWASocket, { useMultiFileAuthState, DisconnectReason, Browsers, fetchLatestBaileysVersion } from '@whiskeysockets/baileys';
 import qrcode from 'qrcode-terminal';
 import { getWhatsAppDestinationNumber } from '../../config/env.js';
 import { logger } from '../../utils/logger.js';
@@ -29,16 +29,21 @@ export class WhatsAppService {
     
     // Store auth in /app/.baileys_auth_v2
     const { state, saveCreds } = await useMultiFileAuthState('/app/.baileys_auth_v2');
+    
+    // Fetch latest WA Web version to avoid "Couldn't link device" errors
+    const { version, isLatest } = await fetchLatestBaileysVersion();
+    logger.info(`WA version: ${version.join('.')}, isLatest: ${isLatest}`);
 
     const connectToWhatsApp = async () => {
       // makeWASocket does not have a default export in some bundlers, handle both cases safely
       const makeSocket = (makeWASocket as any).default || makeWASocket;
       
       this.client = makeSocket({
+        version,
         auth: state,
         printQRInTerminal: false,
         logger: pino({ level: 'silent' }) as any, // Suppress verbose internal logs
-        browser: ['NAMO Hotel Backend', 'Chrome', '120.0.0'],
+        browser: Browsers.ubuntu('Desktop'),
         markOnlineOnConnect: false,
         syncFullHistory: false
       });
