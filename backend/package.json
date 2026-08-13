@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "postinstall": "npx puppeteer browsers install chrome",
     "start": "node dist/server.js",
     "test": "vitest run",
     "test:watch": "vitest",
