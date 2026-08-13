@@ -1,19 +1,23 @@
 FROM node:20
 
-# Install necessary libraries for Puppeteer/Chromium to run
-RUN apt-get update && apt-get install -y \
-    wget gnupg \
-    libx11-xcb1 libxcomposite1 libxdamage1 libxrandr2 libxss1 libxtst6 \
-    libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2 libgbm1 \
+# Install Google Chrome Stable and dependencies
+RUN apt-get update && apt-get install -y wget gnupg \
+    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/googlechrome-linux-keyring.gpg \
+    && sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/googlechrome-linux-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
+      --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Install dependencies (this will download Puppeteer's Chrome automatically)
+# Force Puppeteer to skip downloading and use the installed Chrome
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+
 COPY package*.json ./
 RUN npm install
 
-# Copy application files and build
 COPY . .
 RUN npm run build
 
