@@ -1,24 +1,21 @@
-FROM ghcr.io/puppeteer/puppeteer:latest
+FROM node:20
 
-USER root
+# Install necessary libraries for Puppeteer/Chromium to run
+RUN apt-get update && apt-get install -y \
+    wget gnupg \
+    libx11-xcb1 libxcomposite1 libxdamage1 libxrandr2 libxss1 libxtst6 \
+    libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2 libgbm1 \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# CRITICAL: Set these BEFORE npm install so puppeteer skips downloading a
-# redundant Chrome. We rely on the base image's built-in PUPPETEER_EXECUTABLE_PATH.
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-
+# Install dependencies (this will download Puppeteer's Chrome automatically)
 COPY package*.json ./
 RUN npm install
 
+# Copy application files and build
 COPY . .
 RUN npm run build
-
-# Give pptruser write access so WhatsApp can save its session files
-RUN chown -R pptruser:pptruser /app
-
-# Chrome must run as non-root
-USER pptruser
 
 EXPOSE 5000
 
