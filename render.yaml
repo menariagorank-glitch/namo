@@ -3,6 +3,7 @@ services:
     name: namo-hotel-backend
     env: docker
     plan: free
+    rootDir: backend
     dockerContext: .
     dockerfilePath: ./Dockerfile
     envVars:
