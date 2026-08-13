@@ -1,33 +1,28 @@
-FROM node:20-bullseye-slim
+FROM ghcr.io/puppeteer/puppeteer:latest
 
-# Install latest chrome dev package and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
-# Note: this installs the necessary libs to make the bundled version of Chromium that Puppeteer installs, work.
-RUN apt-get update \
-    && apt-get install -y wget gnupg \
-    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
-      --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
+# Switch to root to configure the app directory and install dependencies
+USER root
 
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
-
+# Create app directory
 WORKDIR /app
 
-# Install dependencies
+# Install app dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy application code
+# Bundle app source
 COPY . .
 
 # Build TypeScript
 RUN npm run build
 
-# Expose API port
+# Switch back to the non-root user provided by the puppeteer image
+# This is crucial because Chrome refuses to run as root securely.
+USER pptruser
+
 EXPOSE 5000
 
-# Start the server
+# Tell Puppeteer to skip downloading another Chrome since this image already has it perfectly configured
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
 CMD ["npm", "start"]
