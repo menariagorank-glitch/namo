@@ -33,11 +33,11 @@
   --fs-md: 1.125rem;      /* 18px */
   --fs-lg: 1.25rem;       /* 20px */
   --fs-xl: 1.5rem;        /* 24px */
-  --fs-2xl: 2rem;         /* 32px */
-  --fs-3xl: 2.5rem;       /* 40px */
-  --fs-4xl: 3rem;         /* 48px */
-  --fs-5xl: 3.75rem;      /* 60px */
-  --fs-6xl: 4.5rem;       /* 72px */
+  --fs-2xl: 1.75rem;      /* 28px */
+  --fs-3xl: 2rem;         /* 32px */
+  --fs-4xl: 2.5rem;       /* 40px */
+  --fs-5xl: 3rem;         /* 48px */
+  --fs-6xl: 3.5rem;       /* 56px */
 
   /* Font Weights */
   --fw-regular: 400;
@@ -108,7 +108,7 @@
 }
 
 html {
-  font-size: 14px;
+  font-size: 16px;
   /* scroll-behavior: smooth — handled by Lenis smooth scroll library */
   -webkit-text-size-adjust: 100%;
 }
