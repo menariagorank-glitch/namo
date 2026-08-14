@@ -21,7 +21,7 @@
 
   /* Typography */
   --font-heading: 'Playfair Display', Georgia, serif;
-  --font-body: 'Poppins', -apple-system, sans-serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
   /* Aliases for legacy template references */
   --ff-heading: var(--font-heading);
   --ff-body: var(--font-body);
@@ -108,7 +108,7 @@
 }
 
 html {
-  font-size: 16px;
+  font-size: 14px;
   /* scroll-behavior: smooth — handled by Lenis smooth scroll library */
   -webkit-text-size-adjust: 100%;
 }
